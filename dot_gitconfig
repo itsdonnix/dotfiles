@@ -1,0 +1,24 @@
+[user]
+	email = donnisnoni@outlook.com
+	username = itsdonnix
+	name = Don Alfons
+	signingkey = FC3EB3251BBF8776
+[credential]
+	credentialStore = gpg
+	helper = /usr/local/bin/git-credential-manager
+[credential "https://github.com"]
+	helper = !/usr/bin/gh auth git-credential
+	username = itsdonnix
+[credential "https://dev.azure.com"]
+	useHttpPath = true
+[core]
+	editor = codium --wait
+[init]
+	defaultBranch = main
+[commit]
+	gpgsign = true
+[alias]
+	up			= "!git remote update -p; git merge --ff-only @{u}"
+	diffp		= "!f() { c=${1:-HEAD}; shift; git diff ${c}~1..${c} \"$@\"; }; f"
+	logp		= "!f() { c=${1:-HEAD}; shift; git log ${c}~1..${c} \"$@\"; }; f"
+	showp		= "!f() { c=${1:-HEAD}; shift; git show ${c}~1..${c} \"$@\"; }; f"
