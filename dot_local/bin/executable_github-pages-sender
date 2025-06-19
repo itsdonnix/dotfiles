@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+
+# Exit on error, unset variables, and errors in pipelines
+set -euo pipefail
+
+# Function to display usage information
+usage() {
+  cat <<EOF
+Usage: $(basename "$0") --build-dir <path>
+
+Options:
+  --build-dir <path>   (Required) Path to the build output directory
+  --help               Show this help message and exit
+
+Example:
+  $(basename "$0") --build-dir ./dist
+EOF
+  exit 1
+}
+
+# Function to handle errors
+error_exit() {
+    echo "Error: $1" >&2
+    exit 1
+}
+
+# Parse arguments
+if [[ $# -eq 0 ]]; then
+  error_exit "Missing required arguments."
+fi
+
+BUILD_DIR=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --build-dir)
+      if [[ -z "${2:-}" ]]; then
+        error_exit "--build-dir requires a non-empty value."
+      fi
+      BUILD_DIR="$2"
+      shift 2
+      ;;
+    --help)
+      usage
+      ;;
+    *)
+      error_exit "Unknown parameter: $1"
+      ;;
+  esac
+done
+
+# Check if build dir was provided
+if [[ -z "$BUILD_DIR" ]]; then
+  error_exit "--build-dir is required."
+fi
+
+# Check if build dir exists
+if [[ ! -d "$BUILD_DIR" ]]; then
+  error_exit "The specified build directory does not exist: $BUILD_DIR"
+fi
+
+# Resolve to absolute path
+BUILD_DIR=$(realpath "$BUILD_DIR")
+
+# Define paths and variables
+PROJECT_DIR=$(pwd)
+TMPDIR=$(mktemp -d)
+
+echo "PROJECT_DIR: $PROJECT_DIR"
+echo "TMPDIR: $TMPDIR"
+echo "BUILD_DIR: $BUILD_DIR"
+
+# Copy git files to gh-pages directory
+echo "📂 Copying git files to $TMPDIR directory"
+rsync -ra "$PROJECT_DIR/.git" "$TMPDIR/" || error_exit "Failed to copy git files to $TMPDIR directory"
+
+# Get the latest commit SHA from the current branch
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD) || error_exit "Failed to get current branch"
+echo "🔍 Getting latest commit SHA from $CURRENT_BRANCH branch"
+LATEST_COMMIT_SHA=$(git rev-parse HEAD) || error_exit "Failed to get latest commit SHA"
+
+# Enter the temp directory
+echo "➡️ Entering $TMPDIR directory"
+cd "$TMPDIR" || error_exit "Failed to enter temp directory"
+
+echo "Fetching origin"
+git fetch origin || error_exit "Failed to fetch origin remote"
+
+# Checkout gh-pages branch from origin
+echo "🌿 Creating gh-pages branch from origin/gh-pages"
+git checkout -q -B gh-pages origin/gh-pages || error_exit "Failed to create gh-pages branch from origin"
+
+# Copy built files to the gh-pages directory
+echo "📦 Copying build files to $TMPDIR directory"
+rsync -ra "$BUILD_DIR/"* "$TMPDIR/" || error_exit "Failed to copy build files"
+
+# Showing git status
+echo "📊 Showing git status"
+git status || error_exit "Git status failed"
+
+# Stage all changes
+echo "✨ Staging all changes"
+git add . || error_exit "Git add failed"
+
+# Commit changes with a message including the latest commit SHA
+COMMIT_MESSAGE="deploy: $LATEST_COMMIT_SHA"
+echo "📝 Committing changes: $COMMIT_MESSAGE"
+git commit -m "$COMMIT_MESSAGE" || error_exit "Git commit failed"
+
+# Push changes to GitHub
+echo "🚀 Pushing changes to GitHub"
+git push origin gh-pages || error_exit "Git push failed"
+
+# Return to the original directory
+echo "⬅️ Leaving $TMPDIR directory"
+cd "$PROJECT_DIR" || error_exit "Failed to return back to project directory"
+
+# Remove the temp directory
+echo "🔥 Removing $TMPDIR directory"
+rm -rf "$TMPDIR" || error_exit "Failed to remove temp directory"
+
+# Deployment success message
+echo "🎉 Deployment completed successfully!"
