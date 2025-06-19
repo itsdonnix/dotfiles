@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+declare -A monitors=(
+  ["eDP"]=1.2
+  ["HDMI-A-0"]=0.5
+)
+
+services=(
+  "gpg-agent --daemon"
+  "$HOME/.fehbg"
+  "nm-applet"
+  "picom"
+  "light-locker"
+  "xfce4-power-manager"
+)
+
+if command -v xrandr >/dev/null 2>&1; then
+  for mon in "${!monitors[@]}"; do
+    bright=${monitors[$mon]}
+    xrandr --output "$mon" --auto --brightness "$bright" &&
+      echo "Set $mon brightness to $bright" ||
+      echo "Warning: failed to set brightness for $mon"
+  done &
+fi
+
+for svc in "${services[@]}"; do
+  cmd=$(echo "$svc" | awk '{print $1}')
+  if command -v "$cmd" >/dev/null 2>&1; then
+    if ! pgrep -f "$svc" >/dev/null; then
+      nohup $svc &>/dev/null &
+    fi
+  else
+    echo "Warning: $cmd not found, skipping..."
+  fi
+done

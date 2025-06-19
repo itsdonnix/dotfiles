@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# Load X resources from .Xresources, if it exists
+[ -f ~/.Xresources ] && xrdb -merge ~/.Xresources
