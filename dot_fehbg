@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Random space wallpapers
+feh --no-fehbg --bg-fill --random "$HOME/Pictures/wallpapers/space/"
