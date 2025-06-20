@@ -7,12 +7,13 @@ declare -A monitors=(
 
 services=(
   "gpg-agent --daemon"
-  "$HOME/.fehbg"
   "nm-applet"
   "picom"
   "light-locker"
   "xfce4-power-manager"
 )
+
+source "$HOME/.fehbg"
 
 if command -v xrandr >/dev/null 2>&1; then
   for mon in "${!monitors[@]}"; do
