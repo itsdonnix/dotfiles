@@ -22,3 +22,5 @@
 	diffp		= "!f() { c=${1:-HEAD}; shift; git diff ${c}~1..${c} \"$@\"; }; f"
 	logp		= "!f() { c=${1:-HEAD}; shift; git log ${c}~1..${c} \"$@\"; }; f"
 	showp		= "!f() { c=${1:-HEAD}; shift; git show ${c}~1..${c} \"$@\"; }; f"
+[gpg]
+	program = /usr/bin/gpg
