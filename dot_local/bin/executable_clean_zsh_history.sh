@@ -8,6 +8,9 @@ BACKUP_FILE="${ZSH_HISTORY_FILE}.bak.$(date +%Y%m%d%H%M%S)"
 cp "$ZSH_HISTORY_FILE" "$BACKUP_FILE"
 echo "Backup saved to $BACKUP_FILE"
 
+# Create a temporary directory using mktemp
+TEMP_DIR=$(mktemp -d)
+
 # Extract just the commands from the history
 # Format: : 1667386293:0;command
 # Remove metadata (everything before first semicolon)
@@ -24,12 +27,12 @@ awk -F';' '{if (NF>1) print $2}' "$ZSH_HISTORY_FILE" |
 
 # Optionally limit number of entries (e.g. 5000)
 MAX_LINES=5000
-tail -n "$MAX_LINES" /tmp/cleaned_zsh_history >/tmp/trimmed_zsh_history
+tail -n "$MAX_LINES" "$TEMP_DIR/cleaned_zsh_history" >"$TEMP_DIR/trimmed_zsh_history"
 
 # Reformat into Zsh history format
-awk -v now="$(date +%s)" '{print ": " now ":0;" $0}' /tmp/trimmed_zsh_history >"$ZSH_HISTORY_FILE"
+awk -v now="$(date +%s)" '{print ": " now ":0;" $0}' "$TEMP_DIR/trimmed_zsh_history" >"$ZSH_HISTORY_FILE"
 
 # Clean up
-rm /tmp/cleaned_zsh_history /tmp/trimmed_zsh_history
+rm -r "$TEMP_DIR"
 
 echo "Zsh history cleaned successfully."
