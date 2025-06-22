@@ -111,6 +111,9 @@ alias psmem="ps -eo pid,rss,%cpu,command --sort=-rss | awk '{print \$1, \$2/1024
 # Load zsh-autosuggestions
 source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
+# Load zsh-syntax-highlighting
+source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
 # Load fzf
 source <(fzf --zsh)
 
