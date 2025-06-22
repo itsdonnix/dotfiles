@@ -1,0 +1,194 @@
+{
+  /* Editor */
+  "editor.acceptSuggestionOnCommitCharacter": false,
+  "editor.detectIndentation": true,
+  "editor.fontFamily": "'CaskaydiaCove Nerd Font', 'Cascadia Code', 'noto color emoji'",
+  "editor.fontLigatures": true,
+  "editor.fontSize": 11.35,
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
+  "editor.letterSpacing": 1.05,
+  "editor.lineHeight": 26,
+  "editor.linkedEditing": true,
+  "editor.matchBrackets": "always",
+  "editor.minimap.renderCharacters": false,
+  "editor.minimap.size": "fit",
+  "editor.renderWhitespace": "selection",
+  "editor.tabSize": 2,
+
+  /* Workbench */
+  "workbench.activityBar.iconClickBehavior": "toggle",
+  "workbench.activityBar.location": "top",
+  "workbench.colorTheme": "Dracula Theme",
+  "workbench.editor.highlightModifiedTabs": true,
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.layoutControl.enabled": false,
+  "workbench.navigationControl.enabled": false,
+  "workbench.productIconTheme": "fluent-icons",
+  "workbench.settings.enableNaturalLanguageSearch": false,
+
+  /* Files */
+  "files.trimFinalNewlines": true,
+  "files.insertFinalNewline": true,
+  "files.associations": {
+    "exclude": "ignore",
+    "*.html": "html",
+    "*.svelte": "svelte",
+    "*.env": "env",
+    "*.env.*": "env"
+  },
+  "files.defaultLanguage": "plaintext",
+  "files.simpleDialog.enable": true,
+
+  /* Window */
+  "window.commandCenter": false,
+  "window.customTitleBarVisibility": "windowed",
+  "window.dialogStyle": "custom",
+  "window.titleBarStyle": "custom",
+
+  /* Extensions */
+  "extensions.autoCheckUpdates": false,
+  "extensions.autoUpdate": false,
+  "extensions.webWorker": "auto",
+
+  /* Explorer */
+  "explorer.autoReveal": "focusNoScroll",
+  "explorer.sortOrder": "type",
+
+  /* Terminal */
+  "terminal.integrated.fontSize": 12.5,
+
+  /* Error Lens */
+  "errorLens.fontSize": "10",
+  "errorLens.fontStyleItalic": true,
+
+  /* Markdown */
+  "markdown.preview.fontSize": 17,
+  "markdown.preview.fontFamily": "Montserrat Medium",
+
+  /* Git */
+  "git.allowForcePush": true,
+  "git.alwaysSignOff": true,
+  "git.autofetch": true,
+  "git.autoStash": true,
+  "git.blame.editorDecoration.enabled": false,
+  "git.confirmSync": true,
+  "git.enableCommitSigning": true,
+  "git.ignoreMissingGitWarning": true,
+  "git.suggestSmartCommit": true,
+
+  /* Git Lens */
+  "gitlens.advanced.messages": {
+    "suppressCommitNotFoundWarning": true
+  },
+  "gitlens.gitCommands.skipConfirmations": [
+    "fetch:command",
+    "switch:command",
+    "push:command",
+    "stash-push:command"
+  ],
+  "gitlens.hovers.currentLine.over": "line",
+  "gitlens.launchpad.indicator.enabled": false,
+  "gitlens.views.commitDetails.files.layout": "tree",
+
+  /* Diff Editor */
+  "diffEditor.ignoreTrimWhitespace": false,
+  "diffEditor.codeLens": true,
+
+  /* Update */
+  "update.mode": "manual",
+
+  /* Emmet */
+  "emmet.includeLanguages": {
+    "blade": "html"
+  },
+
+  /* Tailwind CSS */
+  "tailwindCSS.includeLanguages": {
+    "php": "html",
+    "svelte": "html"
+  },
+
+  /* Debug */
+  "debug.onTaskErrors": "debugAnyway",
+
+  /* Svelte */
+  "svelte.enable-ts-plugin": true,
+  "svelte.plugin.css.colorPresentations.enable": false,
+  "svelte.plugin.css.completions.emmet": false,
+  "svelte.plugin.css.completions.enable": false,
+  "svelte.plugin.css.diagnostics.enable": false,
+  "svelte.plugin.css.documentColors.enable": false,
+  "svelte.plugin.css.documentSymbols.enable": false,
+  "svelte.plugin.css.enable": false,
+  "svelte.plugin.css.hover.enable": false,
+  "svelte.plugin.css.selectionRange.enable": false,
+  "svelte.plugin.svelte.format.enable": false,
+
+  /* TypeScript */
+  "typescript.updateImportsOnFileMove.enabled": "always",
+
+  /* JavaScript */
+  "javascript.updateImportsOnFileMove.enabled": "always",
+
+  /* CSS */
+  "css.lint.unknownAtRules": "ignore",
+
+  /* Vue */
+  "vue.server.hybridMode": "typeScriptPluginOnly",
+
+  /* Language Specific */
+  "[shellscript]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[svelte]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[v]": {
+    "editor.formatOnSave": false,
+    "editor.tabSize": 4
+  },
+  "[c]": {
+    "editor.formatOnSave": false,
+    "editor.tabSize": 4
+  },
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  /* Copilot */
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": false,
+    "markdown": false,
+    "scminput": false
+  },
+
+  /* Java */
+  "redhat.telemetry.enabled": false
+}
