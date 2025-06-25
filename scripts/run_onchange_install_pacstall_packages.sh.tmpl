@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! command -v pacstall &>/dev/null; then
+  echo "Installing PacStall…"
+  curl -fsSL https://pacstall.dev/q/install | bash
+else
+  echo "PacStall is already installed. Skipping."
+fi
+
+echo "# Installing PacStall packages… "
+pkgs=(
+  bat-deb
+  chezmoi-deb
+  github-cli-deb
+  neofetch
+  neovim
+  papirus-icon-theme
+  picom
+  polybar
+  sublime-text-deb
+  tmux
+  yt-dlp
+)
+for pkg in "${pkgs[@]}"; do
+  if ! pacstall -L | grep -xq "^${pkg}$"; then
+    echo "Installing ${pkg}…"
+    sudo pacstall --install --disable-prompts "$pkg"
+  else
+    echo "${pkg} is already installed. Skipping."
+  fi
+done
