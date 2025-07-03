@@ -1062,17 +1062,21 @@ end)
 
 -- Set the focus border color temporarily
 local function change_border_color(c)
+    if not (c and c.valid) then
+        return
+    end
     c.border_color = beautiful.border_focus
-    gears.timer(
-        {
-            timeout = 2,
-            autostart = true,
-            single_shot = true,
-            callback = function()
+
+    gears.timer {
+        timeout     = 2,
+        autostart   = true,
+        single_shot = true,
+        callback    = function()
+            if c and c.valid then
                 c.border_color = beautiful.border_normal
             end
-        }
-    )
+        end,
+    }
 end
 
 -- client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
