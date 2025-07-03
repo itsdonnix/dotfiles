@@ -260,6 +260,14 @@ if config.wibar.enabled then
 end
 
 local function set_wallpaper(s)
+    -- If called without a screen, apply it to all screens
+    if not s then
+        for _, sc in ipairs(screen.count and screen or screen) do
+            set_wallpaper(sc)
+        end
+        return
+    end
+
     local fehbg = os.getenv("HOME") .. "/.fehbg"
     if gears.filesystem.file_readable(fehbg) then
         awful.spawn.with_shell('sh "' .. fehbg .. '"')
