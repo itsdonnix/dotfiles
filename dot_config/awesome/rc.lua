@@ -260,20 +260,15 @@ if config.wibar.enabled then
 end
 
 local function set_wallpaper(s)
-    local fehbg_file = os.getenv("HOME") .. "/.fehbg"
-    local file = io.open(fehbg_file, "r")
-
-    if file then
-        file:close()
-        os.execute(fehbg_file)
+    local fehbg = os.getenv("HOME") .. "/.fehbg"
+    if gears.filesystem.file_readable(fehbg) then
+        awful.spawn.with_shell('sh "' .. fehbg .. '"')
     else
-        naughty.notify(
-            {
-                preset = naughty.config.presets.critical,
-                title = "Error when load wallpaper",
-                text = "No ~/.fehbg file found."
-            }
-        )
+        naughty.notify({
+            preset = naughty.config.presets.critical,
+            title  = "Error loading wallpaper",
+            text   = "No ~/.fehbg file found or it's not readable."
+        })
     end
 end
 
