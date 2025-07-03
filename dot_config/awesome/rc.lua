@@ -860,8 +860,9 @@ awful.rules.rules = {
             floating = true,
         },
         callback   = function(c)
-            awful.placement.centered(c, nil)
-            c.geometry({ y = c.y - 50 })
+            awful.placement.centered(c, {
+                offset = { x = 0, y = -50 }
+            })
         end
     },
 
