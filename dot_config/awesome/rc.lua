@@ -21,6 +21,9 @@ local has_fdo, freedesktop = pcall(require, "freedesktop")
 -- Plugins
 local sharedtags = require("plugins.sharedtags")
 
+-- Modules
+local layoutstatus = require("modules.layout-status")
+
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -33,6 +36,9 @@ if awesome.startup_errors then
         }
     )
 end
+
+-- Init modules
+layoutstatus.init()
 
 -- Handle runtime errors after startup
 do
@@ -1079,7 +1085,22 @@ local function change_border_color(c)
     }
 end
 
--- client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
+local layout = awful.screen.focused().selected_tag.layout
+layoutstatus.notify(layout)
+
+tag.connect_signal("property::selected", function(t)
+    if not t.selected then
+        return
+    end
+    local layout = awful.tag.getproperty(t, "layout")
+    layoutstatus.notify(layout)
+end)
+
+tag.connect_signal("property::layout", function(t)
+    local layout = awful.tag.getproperty(t, "layout")
+    layoutstatus.notify(layout)
+end)
+
 client.connect_signal(
     "focus",
     function(c)
