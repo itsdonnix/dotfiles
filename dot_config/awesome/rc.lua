@@ -537,7 +537,7 @@ local globalkeys =
             function()
                 awful.layout.inc(1)
             end,
-            { description = "select next", group = "layout" }
+            { description = "select next layout", group = "layout" }
         ),
         awful.key(
             { modkey, "Shift" },
@@ -545,7 +545,7 @@ local globalkeys =
             function()
                 awful.layout.inc(-1)
             end,
-            { description = "select previous", group = "layout" }
+            { description = "select previous layout", group = "layout" }
         ),
         awful.key(
             { modkey, "Control" },
