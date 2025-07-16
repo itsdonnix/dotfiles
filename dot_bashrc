@@ -116,6 +116,9 @@ if ! shopt -oq posix; then
   fi
 fi
 
+export LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libgtk3-nocsd.so.0"
+export GTK_CSD=0
+
 export GTK_THEME="papirus-dark"
 
 export NVM_DIR="$HOME/.nvm"
