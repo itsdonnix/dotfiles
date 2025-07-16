@@ -10,7 +10,7 @@ xterm*termName                  : xterm-256color
 ! Set the font family and size
 xterm*faceName                  : Caskaydia Cove Nerd Font
 !xterm*faceName                  : Manolo Mono
-xterm*faceSize                  : 11.5
+xterm*faceSize                  : 10.25
 
 ! Enable font rendering and anti-aliasing for better appearance
 xterm*renderFont                : true
