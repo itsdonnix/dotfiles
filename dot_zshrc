@@ -138,3 +138,6 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 
 # batcat
 export BAT_THEME="ansi"
+
+# zed editor
+export ZED_SAMPLE_COUNT=0
