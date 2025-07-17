@@ -107,6 +107,7 @@ alias ohmyzsh="nvim ~/.oh-my-zsh"
 alias ytmp3="yt-dlp -x --audio-format mp3"
 alias mkdirp="mkdir -p"
 alias psmem="ps -eo pid,rss,%cpu,command --sort=-rss | awk '{print \$1, \$2/1024 \" MB\", \$3, \$4, \$5}' | column -t"
+alias touchp='install -Dv /dev/null'
 
 # Load zsh-autosuggestions
 source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
