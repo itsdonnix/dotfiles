@@ -1,9 +1,9 @@
 configuration {
     show-icons:             true;
     icon-theme:             "Papirus-Dark";
-    display-drun:           "Apps";
-    display-run:            "Run";
-    display-window:         "Windows";
+    display-run:            "run";
+    display-drun:           "apps";
+    display-window:         "windows";
     modi:                   "run,drun,window";
     disable-history:        false;
 }
@@ -124,7 +124,7 @@ configuration {
 }
 #textbox-prompt-colon {
     expand:     false;
-    str:        " >";
+    str:        ":";
     margin:     0px 0.3em 0em 0em ;
     text-color: @foreground;
 }
