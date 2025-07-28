@@ -25,7 +25,8 @@ configuration {
 #window {
     background-color: @background-color;
     border:           1;
-    border-radius:    6;
+    border-color:     @active-background;
+    border-radius:    4;
     padding:          20;
 }
 #mainbox {
@@ -50,7 +51,7 @@ configuration {
 }
 #element {
     border:  0;
-    padding: 15px;
+    padding: 10;
 }
 #element.normal.normal {
     background-color: @background-color;
