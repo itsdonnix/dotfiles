@@ -5,6 +5,7 @@
 	signingkey = FC3EB3251BBF8776
 [credential]
 	credentialStore = gpg
+	helper = 
 	helper = /usr/local/bin/git-credential-manager
 [credential "https://github.com"]
 	helper = !/usr/bin/gh auth git-credential
