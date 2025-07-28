@@ -33,9 +33,9 @@ configuration {
     padding: 0;
 }
 #message {
-    border:       0px;
+    border:       0;
     border-color: @separatorcolor;
-    padding:      1px;
+    padding:      1;
 }
 #textbox {
     text-color: @foreground;
@@ -46,7 +46,7 @@ configuration {
     border-color: @bordercolor;
     spacing:      0;
     scrollbar:    false;
-    padding:      15px 0px 15px 0;
+    padding:      15 0 15 0;
 }
 #element {
     border:  0;
@@ -89,13 +89,13 @@ configuration {
     text-color:       @foreground;
 }
 #scrollbar {
-    width:        2px ;
+    width:        2;
     border:       0;
-    handle-width: 8px ;
+    handle-width: 8;
     padding:      0;
 }
 #sidebar {
-    border:       2px dash 0px 0px ;
+    border:       2 dash 0 0;
     border-color: @separatorcolor;
 }
 #button.selected {
@@ -105,7 +105,7 @@ configuration {
 #inputbar {
     spacing:    0;
     text-color: @foreground;
-    padding:    1px ;
+    padding:    1;
 }
 #case-indicator {
     spacing:    0;
@@ -125,7 +125,7 @@ configuration {
 #textbox-prompt-colon {
     expand:     false;
     str:        ":";
-    margin:     0px 0.3em 0em 0em ;
+    margin:     0 0.3em 0 0;
     text-color: @foreground;
 }
 element-text, element-icon {
