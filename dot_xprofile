@@ -28,7 +28,7 @@ for svc in "${services[@]}"; do
   cmd=$(echo "$svc" | awk '{print $1}')
   if command -v "$cmd" >/dev/null 2>&1; then
     if ! pgrep -f "$svc" >/dev/null; then
-      nohup $svc &>/dev/null &
+      nohup "$svc" &>/dev/null &
     fi
   else
     echo "Warning: $cmd not found, skipping..."
