@@ -21,6 +21,12 @@ xterm*allowBoldFonts            : false
 ! Alternative font (useful for legibility or fallback)
 xterm*font2                     : -xos4-terminus-medium-r-normal-*-14-*-*-*-*-*-iso10646-1
 
+! Always draw its own line‑drawing glyphs instead of relying on font
+xterm*vt100*font-linedrawing    : true
+
+! Assume fonts lack the ACS glyphs so fall‑back drawing is used in every case
+xterm*vt100*forceBoxChars       : true
+
 !##################################################################
 !#                        Window Behavior                        #
 !##################################################################
