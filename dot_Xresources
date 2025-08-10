@@ -35,7 +35,8 @@ xterm*vt100*forceBoxChars       : true
 
 ! Window resizing behavior (controls how the window resizes)
 !xterm*resizeGravity             : NorthWestGravity
-!xterm*maximized                 : true
+xterm*maximized                  : true
+xterm*resizeByPixel              : true
 
 !##################################################################
 !#                          Bell Settings                         #
