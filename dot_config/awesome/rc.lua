@@ -105,9 +105,9 @@ local tags =
         {
             { name = "1st", layout = awful.layout.layouts[1], screen = 1 },
             { name = "2nd", layout = awful.layout.layouts[1], screen = 1 },
-            { name = "3rd", layout = awful.layout.layouts[1], screen = 1 }
-            --{ name = "4th", layout = awful.layout.layouts[1], screen = 2 },
-            --{ name = "5th", layout = awful.layout.layouts[1], screen = 2 },
+            { name = "3rd", layout = awful.layout.layouts[1], screen = 1 },
+            { name = "4th", layout = awful.layout.layouts[1], screen = 2 },
+            { name = "5th", layout = awful.layout.layouts[1], screen = 2 }
             --{ name = "6th", layout = awful.layout.layouts[1], screen = 2 }
             --{ layout = awful.layout.layouts[1] },
             --{ screen = 2, layout = awful.layout.layouts[1] }
