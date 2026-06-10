@@ -8,7 +8,7 @@ xterm*termName                  : xterm-256color
 !#                            Font Settings                       #
 !##################################################################
 ! Set the font family and size
-xterm*faceName                  : Caskaydia Cove Nerd Font
+xterm*faceName                  : Caskaydia Cove Nerd Font Mono
 xterm*faceSize                  : 10.25
 
 ! Enable font rendering and anti-aliasing for better appearance
@@ -26,6 +26,9 @@ xterm*vt100*font-linedrawing    : true
 
 ! Assume fonts lack the ACS glyphs so fall‑back drawing is used in every case
 xterm*vt100*forceBoxChars       : true
+
+! Allow wide Nerd Font icons to render without being clipped or overlapping
+xterm*forcePackedFont: false
 
 !##################################################################
 !#                        Window Behavior                        #
