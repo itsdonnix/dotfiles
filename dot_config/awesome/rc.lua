@@ -21,6 +21,9 @@ local has_fdo, freedesktop = pcall(require, "freedesktop")
 -- Plugins
 local sharedtags = require("plugins.sharedtags")
 
+-- Modules
+local layoutstatus = require("modules.layout-status")
+
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -1080,6 +1083,11 @@ local function change_border_color(c)
 end
 
 -- client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
+tag.connect_signal("property::layout", function(t)
+    -- local layout = awful.tag.getproperty(t, "layout")
+    layoutstatus.notify(t.layout)
+end)
+
 client.connect_signal(
     "focus",
     function(c)
