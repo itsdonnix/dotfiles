@@ -1,0 +1,9 @@
+[[session]]
+name            = "Home"
+path            = "~"
+startup_command = "l"
+
+[[session]]
+name            = "TMUX Config"
+path            = "~"
+startup_command = "nvim .tmux.conf"
