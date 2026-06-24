@@ -116,6 +116,7 @@ source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Lazy load zoxide on first use of 'cd'
+unalias cd 2>/dev/null
 cd() {
     unfunction cd
     eval "$(zoxide init zsh)"
