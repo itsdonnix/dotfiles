@@ -115,6 +115,14 @@ source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 # Load zsh-syntax-highlighting
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
+# Lazy load zoxide on first use of 'cd'
+cd() {
+    unfunction cd
+    eval "$(zoxide init zsh)"
+    alias cd="z"
+    cd "$@" 
+}
+
 # Load fzf
 source <(fzf --zsh)
 
