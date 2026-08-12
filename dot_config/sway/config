@@ -57,8 +57,7 @@ exec --no-startup-id sh -c 'systemctl --user import-environment WAYLAND_DISPLAY 
 focus_follows_mouse no
 
 ### Focus history
-exec_always --no-startup-id pkill -f "$HOME/.config/sway/scripts/mru-window track" || true
-exec_always --no-startup-id "$HOME/.config/sway/scripts/mru-window" track
+exec_always --no-startup-id exec "$HOME/.config/sway/scripts/mru-window" track
 
 ### Focus border
 exec_always --no-startup-id "$HOME/.config/sway/scripts/start-focus-border"
