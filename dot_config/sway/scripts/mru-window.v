@@ -155,17 +155,43 @@ fn write_history_entries(paths RuntimePaths, workspace_id i64, entries []i64) ! 
 	}
 }
 
-fn record_focus(paths RuntimePaths, workspace_id i64, focused_id i64) ! {
+fn update_history(history []i64, focused_id i64) []i64 {
 	mut entries := []i64{cap: max_history_entries}
-	entries << focused_id
-	for id in read_history(paths, workspace_id) {
-		if id != focused_id {
-			entries << id
+	if focused_id > 0 {
+		entries << focused_id
+	}
+	for id in history {
+		if id <= 0 || id == focused_id || id in entries {
+			continue
 		}
+		entries << id
 		if entries.len == max_history_entries {
 			break
 		}
 	}
+	return entries
+}
+
+fn choose_toggle_target(history []i64, valid_ids map[i64]bool, current_id i64) (i64, []i64) {
+	mut cleaned := []i64{cap: max_history_entries}
+	mut target := i64(0)
+	for id in history {
+		if id <= 0 || !valid_ids[id] || id in cleaned {
+			continue
+		}
+		cleaned << id
+		if target == 0 && id != current_id {
+			target = id
+		}
+		if cleaned.len == max_history_entries {
+			break
+		}
+	}
+	return target, cleaned
+}
+
+fn record_focus(paths RuntimePaths, workspace_id i64, focused_id i64) ! {
+	entries := update_history(read_history(paths, workspace_id), focused_id)
 	write_history_entries(paths, workspace_id, entries)!
 }
 
@@ -325,17 +351,7 @@ fn toggle(paths RuntimePaths) ! {
 	current_id := collect_ids(workspace, mut valid_ids, i64(0))
 
 	history := read_history(paths, workspace_id)
-	mut cleaned := []i64{}
-	mut target := i64(0)
-	for id in history {
-		if !valid_ids[id] {
-			continue
-		}
-		cleaned << id
-		if target == 0 && id != current_id {
-			target = id
-		}
-	}
+	target, cleaned := choose_toggle_target(history, valid_ids, current_id)
 	if cleaned != history {
 		write_history_entries(paths, workspace_id, cleaned) or {
 			log_line(paths, 'error', 'state_cleanup_failed',
