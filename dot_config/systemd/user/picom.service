@@ -1,0 +1,14 @@
+[Unit]
+# Picom is an X11 compositor and must not start in Sway/Wayland sessions.
+ConditionEnvironment=XDG_SESSION_TYPE=x11
+Description=Picom X11 compositor
+Documentation=man:picom(1)
+After=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/picom
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=graphical-session.target
