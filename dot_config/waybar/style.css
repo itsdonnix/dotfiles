@@ -1,0 +1,175 @@
+@define-color background #282A36;
+@define-color background_alpha rgba(40, 42, 54, 0.8);
+@define-color current_line #44475A;
+@define-color foreground #F8F8F2;
+@define-color comment #6272A4;
+
+/* Dracula semantic colors */
+@define-color accent #BD93F9;
+@define-color info #8BE9FD;
+@define-color success #50FA7B;
+@define-color warning #FFB86C;
+@define-color critical #FF5555;
+@define-color media #FF79C6;
+
+@define-color border_color @current_line;
+
+/* GTK CSS has no numeric variables; keep all corner radii at 4px. */
+
+* {
+  min-height: 0;
+  border: none;
+  border-radius: 0;
+  font-family: "CaskaydiaCove Nerd Font";
+  font-size: 9.5pt;
+  font-weight: normal;
+}
+
+window#waybar {
+  background: transparent;
+  color: @foreground;
+}
+
+window#waybar > box {
+  background: @background_alpha;
+  border: 1px solid @border_color;
+  border-radius: 4px;
+}
+
+window#waybar.hidden {
+  opacity: 0.2;
+}
+
+#workspaces {
+  margin-left: 0;
+}
+
+#workspaces button {
+  min-width: 0;
+  padding: 0 10px;
+  color: @comment;
+  background: transparent;
+  border-radius: 0;
+}
+
+#workspaces button:first-child {
+  border-radius: 4px 0 0 4px;
+}
+
+#workspaces button:hover {
+  background: @current_line;
+  color: @foreground;
+  box-shadow: none;
+  text-shadow: none;
+}
+
+#workspaces button.focused {
+  background: @current_line;
+  color: @accent;
+}
+
+#workspaces button.visible:not(.focused) {
+  color: @foreground;
+}
+
+#workspaces button.urgent {
+  background: @critical;
+  color: @foreground;
+}
+
+#window {
+  padding: 0 8px;
+  color: @foreground;
+}
+
+#window.empty {
+  padding: 0;
+}
+
+#mpris {
+  padding: 0 8px;
+  color: @media;
+}
+
+#mpris.paused,
+#mpris.stopped {
+  color: @comment;
+}
+
+#mpris:hover {
+  background: @current_line;
+}
+
+#custom-separator,
+#custom-mpris-separator {
+  padding: 0 4px;
+  color: @comment;
+}
+
+#tray,
+#pulseaudio,
+#memory,
+#cpu,
+#battery,
+#clock {
+  padding: 0 8px;
+}
+
+#tray {
+  margin-left: 4px;
+  color: @foreground;
+}
+
+#pulseaudio {
+  color: @info;
+}
+
+#memory,
+#cpu {
+  color: @foreground;
+}
+
+#battery {
+  color: @success;
+}
+
+#clock {
+  color: @info;
+}
+
+#pulseaudio.muted {
+  color: @comment;
+}
+
+#battery.warning:not(.charging) {
+  color: @warning;
+  background: transparent;
+}
+
+#battery.critical:not(.charging) {
+  color: @critical;
+  background: transparent;
+}
+
+#pulseaudio:hover,
+#memory:hover,
+#cpu:hover,
+#battery:hover,
+#clock:hover {
+  background: @current_line;
+}
+
+#clock:hover {
+  border-radius: 0 4px 4px 0;
+}
+
+tooltip {
+  background: @background;
+  color: @foreground;
+  border: 1px solid @border_color;
+  border-radius: 4px;
+}
+
+tooltip label {
+  color: @foreground;
+}

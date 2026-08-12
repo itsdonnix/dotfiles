@@ -1,0 +1,190 @@
+### Variables
+set $mod Mod1
+set $left h
+set $down j
+set $up k
+set $right l
+set $term ghostty
+set $dmenu_run rofi -show run
+set $dmenu_apps rofi -show drun
+set $dmenu_window rofi -show window
+
+xwayland enable
+
+# SwayFX window corners: match Waybar.
+corner_radius 4
+smart_corner_radius disable
+
+# Transparent windows with a minimal background blur.
+blur enable
+blur_xray disable
+blur_passes 1
+blur_radius 2
+blur_noise 0.01
+
+# Apply minimal blur to the Waybar layer-shell surface.
+layer_effects "waybar" {
+    blur enable
+    blur_xray disable
+    blur_ignore_transparent enable
+    corner_radius 4
+}
+
+# Apply 30% opacity to native Wayland and XWayland application windows.
+for_window [app_id=".+"] opacity 0.95
+for_window [class=".+"] opacity 0.95
+
+# AwesomeWM-style focus borders.
+default_border pixel 1
+default_floating_border pixel 1
+hide_edge_borders none
+
+client.focused          #BD93F9 #282A36 #F8F8F2 #BD93F9 #BD93F9
+client.focused_inactive #44475A #282A36 #F8F8F2 #44475A #44475A
+client.unfocused        #44475A #282A36 #F8F8F2 #44475A #44475A
+client.urgent           #FF5555 #282A36 #F8F8F2 #FF5555 #FF5555
+
+font pango:CaskaydiaCove Nerd Font 10
+
+include /etc/sway/config-vars.d/*
+
+# Import the active Sway environment before starting graphical-session services.
+# Enabled units such as Waybar and Mako are started by graphical-session.target.
+exec --no-startup-id sh -c 'systemctl --user import-environment WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP XDG_SESSION_TYPE DESKTOP_SESSION; dbus-update-activation-environment --systemd WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP XDG_SESSION_TYPE DESKTOP_SESSION; systemctl --user start graphical-session.target'
+
+### Input configuration
+# Keep focus from changing when the pointer moves across windows.
+focus_follows_mouse no
+
+### Focus history
+exec_always --no-startup-id pkill -f "$HOME/.config/sway/scripts/mru-window track" || true
+exec_always --no-startup-id "$HOME/.config/sway/scripts/mru-window" track
+
+### Focus border
+exec_always --no-startup-id "$HOME/.config/sway/scripts/start-focus-border"
+
+### Key bindings
+#
+# Basics:
+#
+    bindsym $mod+Return exec $term
+    bindsym $mod+Shift+c kill
+    bindsym $mod+p exec $dmenu_run
+    bindsym $mod+a exec $dmenu_apps
+    bindsym $mod+Control+w exec $dmenu_window
+    bindsym $mod+Tab exec ~/.config/sway/scripts/mru-window toggle
+
+    # AwesomeWM-compatible session controls
+    bindsym $mod+Control+r reload
+    bindsym $mod+Shift+q exec swaymsg exit
+    bindsym $mod+Shift+l exec lock-screen
+    bindsym Print exec flameshot gui
+
+    floating_modifier $mod normal
+#
+# Moving around:
+#
+    bindsym $mod+j focus next
+    bindsym $mod+k focus prev
+
+    bindsym $mod+comma focus output left
+    bindsym $mod+period focus output right
+    bindsym $mod+u focus urgent
+    bindsym $mod+Escape workspace back_and_forth
+
+    bindsym $mod+Left focus left
+    bindsym $mod+Down focus down
+    bindsym $mod+Up focus up
+    bindsym $mod+Right focus right
+
+    bindsym $mod+Shift+comma move left
+    bindsym $mod+Shift+period move right
+
+    bindsym $mod+Shift+$left move left
+    bindsym $mod+Shift+Left move left
+    bindsym $mod+Shift+Down move down
+    bindsym $mod+Shift+Up move up
+    bindsym $mod+Shift+Right move right
+#
+# Workspaces:
+#
+    bindsym $mod+1 workspace number 1
+    bindsym $mod+2 workspace number 2
+    bindsym $mod+3 workspace number 3
+    bindsym $mod+4 workspace number 4
+    bindsym $mod+5 workspace number 5
+    bindsym $mod+6 workspace number 6
+    bindsym $mod+7 workspace number 7
+    bindsym $mod+8 workspace number 8
+    bindsym $mod+9 workspace number 9
+    bindsym $mod+0 workspace number 10
+
+    bindsym $mod+Shift+1 move container to workspace number 1
+    bindsym $mod+Shift+2 move container to workspace number 2
+    bindsym $mod+Shift+3 move container to workspace number 3
+    bindsym $mod+Shift+4 move container to workspace number 4
+    bindsym $mod+Shift+5 move container to workspace number 5
+    bindsym $mod+Shift+6 move container to workspace number 6
+    bindsym $mod+Shift+7 move container to workspace number 7
+    bindsym $mod+Shift+8 move container to workspace number 8
+    bindsym $mod+Shift+9 move container to workspace number 9
+    bindsym $mod+Shift+0 move container to workspace number 10
+#
+# Layout stuff:
+#
+    bindsym $mod+b exec "$HOME/.config/sway/scripts/toggle-waybar"
+
+    bindsym $mod+Control+b splith
+    bindsym $mod+v splitv
+
+    bindsym $mod+s layout stacking
+    bindsym $mod+w layout tabbed
+    bindsym $mod+e layout toggle split
+
+    bindsym $mod+f fullscreen
+    bindsym $mod+m fullscreen
+    bindsym $mod+t sticky toggle
+
+    bindsym $mod+space layout toggle split
+    bindsym $mod+Shift+space layout toggle tabbed stacking split
+    bindsym $mod+Control+space floating toggle
+
+    bindsym $mod+h resize shrink width 5 ppt
+    bindsym $mod+l resize grow width 5 ppt
+#
+# Scratchpad:
+#
+    bindsym $mod+n move scratchpad
+    bindsym $mod+Control+n scratchpad show
+    bindsym $mod+Shift+minus move scratchpad
+    bindsym $mod+minus scratchpad show
+
+    bindsym $mod+o move container to output right
+#
+# Resizing containers:
+#
+mode "resize" {
+    bindsym $left resize shrink width 10px
+    bindsym $down resize grow height 10px
+    bindsym $up resize shrink height 10px
+    bindsym $right resize grow width 10px
+
+    bindsym Left resize shrink width 10px
+    bindsym Down resize grow height 10px
+    bindsym Up resize shrink height 10px
+    bindsym Right resize grow width 10px
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
+
+# Wallpaper.
+exec_always --no-startup-id wbg -s ~/Pictures/wallpapers/WhiteSur/2k/WhiteSur.jpg
+
+# Window margins: match Waybar except at the top.
+gaps inner 5
+gaps outer 0
+gaps top 0
+
+include /etc/sway/config.d/*
