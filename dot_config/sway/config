@@ -179,7 +179,7 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 # Wallpaper.
-exec_always --no-startup-id wbg -s ~/Pictures/wallpapers/WhiteSur/2k/WhiteSur.jpg
+exec_always --no-startup-id wallpaperctl next
 
 # Window margins: match Waybar except at the top.
 gaps inner 5

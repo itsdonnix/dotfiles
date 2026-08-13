@@ -1,0 +1,394 @@
+#!/bin/sh
+set -u
+
+pool=${WALLPAPERCTL_DIR:-"$HOME/.config/wallpapers"}
+runtime_base=${XDG_RUNTIME_DIR:-/tmp}
+runtime_dir="$runtime_base/wallpaperctl-$(id -u)"
+state_file="$runtime_dir/current"
+
+usage() {
+    cat <<'EOF'
+Usage:
+  wallpaperctl add <path>...
+  wallpaperctl remove <name-or-path>...
+  wallpaperctl list
+  wallpaperctl prune
+  wallpaperctl next
+  wallpaperctl reload
+  wallpaperctl help
+
+Commands:
+  add       Link existing wallpaper images or directories into the pool.
+            Directories must recursively contain a supported image.
+            The operation is transactional: if any argument fails, nothing is added.
+
+  remove    Unlink entries by link name or source path.
+            Source files/directories are never deleted.
+            The operation is transactional: if any argument fails, nothing is removed.
+
+  list      List managed links and their status.
+
+  prune     Remove broken symlinks only.
+
+  next      Pick and display a random wallpaper without reloading Sway.
+            Avoids the current wallpaper when another image is available.
+
+  reload    Run: swaymsg reload
+
+Supported image formats: jpg, jpeg, png, webp
+Wallpaper pool: ~/.config/wallpapers
+EOF
+}
+
+error() {
+    printf 'wallpaperctl: %s\n' "$*" >&2
+}
+
+is_image_name() {
+    case $1 in
+        *.[jJ][pP][gG]|*.[jJ][pP][eE][gG]|*.[pP][nN][gG]|*.[wW][eE][bB][pP]) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+canonical_existing() {
+    readlink -f -- "$1" 2>/dev/null
+}
+
+contains_image() {
+    dir=$1
+    find -L "$dir" -type f \
+        \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) \
+        -print -quit 2>/dev/null | grep -q .
+}
+
+ensure_pool() {
+    mkdir -p "$pool" || {
+        error "cannot create wallpaper pool: $pool"
+        exit 1
+    }
+}
+
+cmd_add() {
+    [ "$#" -gt 0 ] || {
+        error 'add requires at least one path'
+        exit 2
+    }
+
+    ensure_pool
+    plan=$(mktemp) || exit 1
+    trap 'rm -f "$plan"' EXIT HUP INT TERM
+
+    for input do
+        [ -e "$input" ] || {
+            error "path does not exist: $input"
+            exit 1
+        }
+
+        target=$(canonical_existing "$input") || {
+            error "cannot resolve path: $input"
+            exit 1
+        }
+
+        if [ -f "$target" ]; then
+            is_image_name "$target" || {
+                error "unsupported image type: $input"
+                exit 1
+            }
+        elif [ -d "$target" ]; then
+            contains_image "$target" || {
+                error "directory contains no supported images: $input"
+                exit 1
+            }
+        else
+            error "not a regular file or directory: $input"
+            exit 1
+        fi
+
+        name=${target##*/}
+        [ -n "$name" ] || {
+            error "cannot derive link name from: $input"
+            exit 1
+        }
+        dest="$pool/$name"
+
+        # Existing pool entry with this basename is always a collision.
+        if [ -e "$dest" ] || [ -L "$dest" ]; then
+            error "name already exists in pool: $name"
+            exit 1
+        fi
+
+        # Reject a target already linked under any name.
+        for entry in "$pool"/*; do
+            [ -L "$entry" ] || continue
+            existing=$(readlink -f -- "$entry" 2>/dev/null || true)
+            if [ -n "$existing" ] && [ "$existing" = "$target" ]; then
+                error "source is already linked as: ${entry##*/}"
+                exit 1
+            fi
+        done
+
+        # Reject duplicates within this same transactional invocation.
+        while IFS='|' read -r planned_name planned_target; do
+            [ -n "$planned_name" ] || continue
+            if [ "$planned_target" = "$target" ]; then
+                error "duplicate source in arguments: $input"
+                exit 1
+            fi
+            if [ "$planned_name" = "$name" ]; then
+                error "duplicate basename in arguments: $name"
+                exit 1
+            fi
+        done < "$plan"
+
+        printf '%s|%s\n' "$name" "$target" >> "$plan"
+    done
+
+    while IFS='|' read -r name target; do
+        ln -s -- "$target" "$pool/$name" || exit 1
+        printf 'added: %s -> %s\n' "$name" "$target"
+    done < "$plan"
+
+    rm -f "$plan"
+    trap - EXIT HUP INT TERM
+}
+
+resolve_remove() {
+    arg=$1
+
+    # Exact managed link name wins.
+    case $arg in
+        */*) ;;
+        *)
+            candidate="$pool/$arg"
+            if [ -L "$candidate" ]; then
+                printf '%s\n' "$candidate"
+                return 0
+            fi
+            ;;
+    esac
+
+    [ -e "$arg" ] || {
+        error "no managed link named '$arg' and source path does not exist"
+        return 1
+    }
+
+    target=$(canonical_existing "$arg") || {
+        error "cannot resolve source path: $arg"
+        return 1
+    }
+
+    match=''
+    for entry in "$pool"/*; do
+        [ -L "$entry" ] || continue
+        resolved=$(readlink -f -- "$entry" 2>/dev/null || true)
+        [ "$resolved" = "$target" ] || continue
+        if [ -n "$match" ]; then
+            error "multiple links unexpectedly resolve to source: $arg"
+            return 1
+        fi
+        match=$entry
+    done
+
+    [ -n "$match" ] || {
+        error "source is not linked in wallpaper pool: $arg"
+        return 1
+    }
+
+    printf '%s\n' "$match"
+}
+
+cmd_remove() {
+    [ "$#" -gt 0 ] || {
+        error 'remove requires at least one name or path'
+        exit 2
+    }
+
+    ensure_pool
+    plan=$(mktemp) || exit 1
+    trap 'rm -f "$plan"' EXIT HUP INT TERM
+
+    for arg do
+        link=$(resolve_remove "$arg") || exit 1
+
+        if grep -Fqx -- "$link" "$plan" 2>/dev/null; then
+            error "same managed link requested more than once: ${link##*/}"
+            exit 1
+        fi
+        printf '%s\n' "$link" >> "$plan"
+    done
+
+    while IFS= read -r link; do
+        target=$(readlink -- "$link")
+        rm -- "$link" || exit 1
+        printf 'removed: %s -> %s\n' "${link##*/}" "$target"
+    done < "$plan"
+
+    rm -f "$plan"
+    trap - EXIT HUP INT TERM
+}
+
+cmd_list() {
+    ensure_pool
+    found=0
+
+    for entry in "$pool"/*; do
+        [ -L "$entry" ] || continue
+        found=1
+        name=${entry##*/}
+        raw=$(readlink -- "$entry")
+
+        if [ ! -e "$entry" ]; then
+            printf '%s -> %s [broken]\n' "$name" "$raw"
+            continue
+        fi
+
+        target=$(readlink -f -- "$entry" 2>/dev/null || printf '%s' "$raw")
+        if [ -d "$entry" ]; then
+            kind=directory
+        elif [ -f "$entry" ] && is_image_name "$entry"; then
+            kind=image
+        else
+            kind=unsupported
+        fi
+        printf '%s -> %s [%s]\n' "$name" "$target" "$kind"
+    done
+
+    [ "$found" -eq 1 ] || printf 'No managed wallpapers.\n'
+}
+
+cmd_prune() {
+    ensure_pool
+    removed=0
+
+    for entry in "$pool"/*; do
+        [ -L "$entry" ] || continue
+        [ -e "$entry" ] && continue
+        target=$(readlink -- "$entry")
+        rm -- "$entry" || exit 1
+        printf 'pruned: %s -> %s\n' "${entry##*/}" "$target"
+        removed=$((removed + 1))
+    done
+
+    [ "$removed" -gt 0 ] || printf 'No broken wallpaper links.\n'
+}
+
+cmd_next() {
+    ensure_pool
+    command -v wbg >/dev/null 2>&1 || {
+        error 'wbg is not installed or not in PATH'
+        exit 1
+    }
+    command -v shuf >/dev/null 2>&1 || {
+        error 'shuf is not installed or not in PATH'
+        exit 1
+    }
+
+    all=$(mktemp) || exit 1
+    choices=$(mktemp) || {
+        rm -f "$all"
+        exit 1
+    }
+    trap 'rm -f "$all" "$choices"' EXIT HUP INT TERM
+
+    # -L follows symlinked files and symlinked directories recursively.
+    find -L "$pool" -type f \
+        \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) \
+        -print 2>/dev/null > "$all" || true
+
+    [ -s "$all" ] || {
+        error "no supported wallpapers found under: $pool"
+        exit 1
+    }
+
+    current=''
+    if [ -r "$state_file" ]; then
+        IFS= read -r current < "$state_file" || true
+    fi
+
+    count=$(wc -l < "$all" | tr -d ' ')
+    if [ "$count" -gt 1 ] && [ -n "$current" ]; then
+        while IFS= read -r image; do
+            [ "$image" = "$current" ] || printf '%s\n' "$image"
+        done < "$all" > "$choices"
+    else
+        cat "$all" > "$choices"
+    fi
+
+    # Fall back to the complete set if stale state filtered everything.
+    [ -s "$choices" ] || cat "$all" > "$choices"
+
+    wallpaper=$(shuf -n 1 "$choices")
+    [ -n "$wallpaper" ] && [ -f "$wallpaper" ] || {
+        error 'failed to select a valid wallpaper'
+        exit 1
+    }
+
+    mkdir -p "$runtime_dir" || exit 1
+
+    # Validate the new candidate before replacing the current wbg instance.
+    pkill -x wbg 2>/dev/null || true
+    wbg -s "$wallpaper" >/dev/null 2>&1 &
+    pid=$!
+
+    # Detect an immediate startup failure before recording state.
+    sleep 0.1
+    if ! kill -0 "$pid" 2>/dev/null; then
+        wait "$pid" 2>/dev/null || true
+        error "wbg failed to start for: $wallpaper"
+        exit 1
+    fi
+
+    printf '%s\n' "$wallpaper" > "$state_file"
+    printf '%s\n' "$wallpaper"
+
+    rm -f "$all" "$choices"
+    trap - EXIT HUP INT TERM
+}
+
+cmd_reload() {
+    command -v swaymsg >/dev/null 2>&1 || {
+        error 'swaymsg is not installed or not in PATH'
+        exit 1
+    }
+    swaymsg reload
+}
+
+case ${1:-help} in
+    add)
+        shift
+        cmd_add "$@"
+        ;;
+    remove|rm|unlink)
+        shift
+        cmd_remove "$@"
+        ;;
+    list|ls)
+        shift
+        [ "$#" -eq 0 ] || { error 'list takes no arguments'; exit 2; }
+        cmd_list
+        ;;
+    prune)
+        shift
+        [ "$#" -eq 0 ] || { error 'prune takes no arguments'; exit 2; }
+        cmd_prune
+        ;;
+    next)
+        shift
+        [ "$#" -eq 0 ] || { error 'next takes no arguments'; exit 2; }
+        cmd_next
+        ;;
+    reload)
+        shift
+        [ "$#" -eq 0 ] || { error 'reload takes no arguments'; exit 2; }
+        cmd_reload
+        ;;
+    help|-h|--help)
+        usage
+        ;;
+    *)
+        error "unknown command: $1"
+        usage >&2
+        exit 2
+        ;;
+esac
